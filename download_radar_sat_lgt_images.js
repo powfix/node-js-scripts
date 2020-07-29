@@ -11,7 +11,12 @@ const downloadImage = (date: Moment, resolution: number = 1440, retryCount: numb
 	const task = () => new Promise((resolve1, reject1) => {
 		const image_url: string = `https://www.weather.go.kr/cgi-bin/rdr_new/nph-rdr_sat_lgt_img?tm=${date.format('YYYYMMDDHHmm')}&sat=ir1&rdr=lng&map=HC&size=${resolution}&zoom_level=0&zoom_x=0000000&zoom_y=0000000&fog=0`;
 		const file_name: string = `nph-rdr_sat_lgt_img_v3_${resolution}px_${time.format('YYYY_MM_DD_HHmm')}.png`;
-		const path = `archives/radar_sat_lgt_images/${file_name}`;
+		const directory = 'archives/radar_sat_lgt_images';
+		const path = `${directory}/${file_name}`;
+
+		if (!fs.existsSync(directory)) {
+			fs.mkdirSync(directory, {recursive: true});
+		}
 
 		const isExists: boolean = fs.existsSync(path);
 		if (isExists) {
