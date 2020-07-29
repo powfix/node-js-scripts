@@ -77,9 +77,7 @@ const taskIterator = (): Promise => {
 	if (time.isAfter(currentTime)) return null;
 
 	++count;
-	time.add(2, 'minute');
-	console.log('time', time.format('YYYY-MM-DD HH:mm'));
-	return downloadImage(time, 3, true);
+	return downloadImage(time.add(2, 'minute'), 3, true);
 }
 
 new PromisePool(taskIterator, 4).start().then(() => {
