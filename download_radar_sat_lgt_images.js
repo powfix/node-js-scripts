@@ -71,6 +71,7 @@ const downloadImage = (date: Moment, resolution: number = 1440, retryCount: numb
 	taskHandler();
 });
 
+time.add(-5, 'minute');
 const taskIterator = (): Promise => {
 	// if (time.year() !== 2020) return null;
 	if (time.isAfter(currentTime)) return null;

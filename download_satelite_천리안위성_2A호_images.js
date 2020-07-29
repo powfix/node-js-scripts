@@ -71,6 +71,7 @@ const downloadImage = (date: Moment, retryCount: number = 0, ignoreError: boolea
 	taskHandler();
 });
 
+time.add(-2, 'minute');
 const taskIterator = (): Promise => {
 	// if (time.year() !== 2020) return null;
 	if (time.isAfter(currentTime)) return null;
