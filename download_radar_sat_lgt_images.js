@@ -21,7 +21,6 @@ const downloadImage = (date: Moment, resolution: number = 1440, retryCount: numb
 		const isExists: boolean = fs.existsSync(path);
 		if (isExists) {
 			console.log(`[${count}] Skip already exists`, path);
-			time.add(5, 'minute');
 			return resolve1();
 		}
 
