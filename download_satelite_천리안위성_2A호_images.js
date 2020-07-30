@@ -73,8 +73,7 @@ const downloadImage = (date: Moment, retryCount: number = 0, ignoreError: boolea
 
 time.add(-2, 'minute');
 const taskIterator = (): Promise => {
-	// if (time.year() !== 2020) return null;
-	if (time.isAfter(currentTime)) return null;
+	if (moment(time).add(9, 'hour').isAfter(currentTime)) return null;
 
 	++count;
 	return downloadImage(time.add(2, 'minute'), 3, true);
