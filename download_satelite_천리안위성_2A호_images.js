@@ -7,7 +7,7 @@ let count: number = 0;
 const time = moment('2020-07-28 00:00', 'YYYY-MM-DD HH:mm');
 const currentTime = moment();
 
-const downloadImage = (date: Moment, retryCount: number = 0, ignoreError: boolean = true): Promise => new Promise((resolve, reject) => {
+const downloadImage = (count: number, date: Moment, retryCount: number = 0, ignoreError: boolean = true): Promise => new Promise((resolve, reject) => {
 	const task = () => new Promise((resolve1, reject1) => {
 		const image_url: string = `http://www.weather.go.kr/repositary/image/sat/gk2a/KO/gk2a_ami_le1b_rgb-daynight_ko020lc_${time.format('YYYYMMDDHHmm')}.srv.png`;
 		const file_name: string = `gk2a_ami_le1b_rgb-daynight_ko020lc_${time.format('YYYYMMDDHHmm')}.srv.png`;
@@ -24,19 +24,20 @@ const downloadImage = (date: Moment, retryCount: number = 0, ignoreError: boolea
 			return resolve1();
 		}
 
+		console.log(`[${count}] Start task`, image_url);
 		const request = http.get(image_url, {},(response) => {
-			console.log(`[${count}]`, image_url, response.statusCode);
 			if (response.statusCode === 200) {
 				const file = fs.createWriteStream(path);
 				file.on('finish', function() {
 					file.close();  // close() is async, call cb after close completes.
+					console.info(`    => [${count}] Finish task`, image_url, response.statusCode);
 					resolve1();
 				});
 				response.pipe(file);
 				return;
 			}
 
-			reject1();
+			reject1(response.statusCode);
 		}).on('error', (err) => { // Handle errors
 			console.warn('http request failed', image_url);
 			fs.unlink(path, () => {
@@ -51,7 +52,7 @@ const downloadImage = (date: Moment, retryCount: number = 0, ignoreError: boolea
 			resolve();
 		}).catch((error) => {
 			if (retryCount > 0) {
-				console.log(`[${count}] Retry task`, retryCount);
+				console.log(`[${count}] Retry(${retryCount}) task`, error);
 				retryCount = retryCount - 1;
 				setTimeout(() => {
 					taskHandler();
@@ -74,9 +75,7 @@ const downloadImage = (date: Moment, retryCount: number = 0, ignoreError: boolea
 time.add(-2, 'minute');
 const taskIterator = (): Promise => {
 	if (moment(time).add(9, 'hour').isAfter(currentTime)) return null;
-
-	++count;
-	return downloadImage(time.add(2, 'minute'), 3, true);
+	return downloadImage(++count, time.add(2, 'minute'), 3, true);
 }
 
 new PromisePool(taskIterator, 4).start().then(() => {
