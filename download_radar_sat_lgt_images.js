@@ -24,8 +24,8 @@ const downloadImage = (date: Moment, resolution: number = 1440, retryCount: numb
 			return resolve1();
 		}
 
-		console.log(`[${count}]`, image_url);
 		const request = https.get(image_url, {},(response) => {
+			console.log(`[${count}]`, image_url, response.statusCode);
 			if (response.statusCode === 200) {
 				const file = fs.createWriteStream(path);
 				file.on('finish', function() {
